@@ -96,3 +96,65 @@ class ConvModel(nn.Module):
         if self.verbose:
             print(f"Model output shape: {x.shape}")
         return x
+
+
+class ConvModelBetter(nn.Module):
+    def __init__(self, input_channels: int, num_filters: int, verbose: bool = False):
+        """
+        Model definition.
+
+        Args:
+            input_channels: Number of input channels, this is 3 for the RGB images in CIFAR10
+            num_filters: Number of convolutional filters
+        """
+        super().__init__()
+        self.verbose = verbose
+        self.num_filters = num_filters
+
+        self.conv1 = nn.Conv2d(in_channels=input_channels, out_channels=num_filters, kernel_size=3, stride=2, padding=1)
+        self.norm1 = nn.BatchNorm2d(num_filters)
+        self.relu = nn.ReLU()
+
+        self.conv2 = nn.Conv2d(in_channels=num_filters, out_channels=2*num_filters, kernel_size=3, stride=1, padding=1)
+        self.norm2 = nn.BatchNorm2d(2*num_filters)
+
+        self.conv3 = nn.Conv2d(in_channels=2*num_filters, out_channels=4*num_filters, kernel_size=3, stride=1, padding=1)
+        self.norm3 = nn.BatchNorm2d(4*num_filters)
+
+        self.conv4 = nn.Conv2d(in_channels=4*num_filters, out_channels=2*num_filters, kernel_size=3, stride=1, padding=1)
+        self.norm4 = nn.BatchNorm2d(2*num_filters)
+
+        self.avgPool = nn.AvgPool2d(kernel_size=16, stride=16)
+
+        self.lin = nn.Linear(in_features=2*num_filters, out_features=10)
+
+    def forward(self, x: th.Tensor):
+        """
+        Model forward pass.
+
+        Args:
+            x: Model input, shape [batch_size, in_c, in_h, in_w]
+
+        Returns:
+            Model output, shape [batch_size, num_classes]
+        """
+        if self.verbose:
+            print(f"Input shape: {x.shape}")
+
+        x = self.relu(self.norm1(self.conv1(x)))
+        x = self.relu(self.norm2(self.conv2(x)))
+        x = self.relu(self.norm3(self.conv3(x)))
+        x = self.relu(self.norm4(self.conv4(x)))
+
+        # Apply averagepool
+        x = self.avgPool(x)
+
+        # Here we reshape the input to 2D shape (batch_size, 2 * num_filters)
+        # so we can apply a linear layer.
+        x = th.reshape(x, (-1, 2 * self.num_filters))
+
+        x = self.lin(x)
+
+        if self.verbose:
+            print(f"Model output shape: {x.shape}")
+        return x
