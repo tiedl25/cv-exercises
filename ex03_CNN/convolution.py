@@ -21,17 +21,20 @@ def convolve2D(image, kernel, padding=0, strides=1):
 
     # Shape of Output Convolution
     # START TODO ###################
-    # xOutput =
-    # yOutput = 
-    raise NotImplementedError
+
+    xOutput = np.floor(image_x_shape + 2 * padding - kernel_x_shape) / strides + 1
+    yOutput = np.floor(image_y_shape + 2 * padding - kernel_y_shape) / strides + 1
+
+    output_y_shape = int(yOutput)
+    output_x_shape = int(xOutput)
+
     # END TODO ###################
     output = np.zeros((output_y_shape, output_x_shape))
 
     # Apply Equal Padding to All Sides
     if padding != 0:
         # START TODO ###################
-        # imagePadded = 
-        raise NotImplementedError
+        image_padded = np.pad(image, ((padding, padding), (padding, padding)), mode="reflect")
         # END TODO ###################
     else:
         image_padded = image
@@ -42,7 +45,9 @@ def convolve2D(image, kernel, padding=0, strides=1):
     for y in range(kernel_up, image_padded.shape[0], strides):
         # START TODO ###################
         # Exit Convolution before y is out of bounds
-        raise NotImplementedError
+
+        y_new = int((y-kernel_up) / strides)
+
         # END TODO ###################
 
         # START TODO ###################
@@ -50,7 +55,12 @@ def convolve2D(image, kernel, padding=0, strides=1):
         # position the center of the kernel at x,y
         # and save the sum of the elementwise multiplication
         # to the corresponding pixel in the output image
-        raise NotImplementedError
+
+        for x in range(kernel_left, image_padded.shape[1], strides):
+            x_new = int((x-kernel_left) / strides)
+
+            output[y_new, x_new] = np.sum(image_padded[y-kernel_up:y+kernel_down, x-kernel_left:x+kernel_right] * kernel)
+
         # END TODO ###################
     return output
 
