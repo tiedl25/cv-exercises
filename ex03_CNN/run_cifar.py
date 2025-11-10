@@ -24,14 +24,19 @@ def get_transforms(args):
         # use torchvision.transforms.Compose to compose our custom augmentations
         # horizontal_flip, random_resize_crop, ToTensor, Normalize
         # you can play around with the parameters
-        # train_transforms=
-        raise NotImplementedError
+        train_transforms = torchvision.transforms.Compose(
+            [horizontal_flip(0.5),
+            random_resize_crop(300, (0.2, 0.5))]
+        )
         # END TODO #################
     elif args.transforms == 'torchvision':
         # START TODO #################
         # achieve the same as above with torchvision transforms
         # compare your own implementation against theirs
-        raise NotImplementedError
+        train_transforms = torchvision.transforms.Compose(
+            [torchvision.transforms.RandomHorizontalFlip(),
+            torchvision.transforms.RandomResizedCrop(300)]
+        )
         # END TODO #################
     else:
         raise ValueError(f"Unknown transform {args.transforms}")
@@ -145,14 +150,12 @@ def main():
 
     # START TODO #################
     # initialize the SummaryWriter with a log directory in args.out_dir/logs
-    # tb_writer = 
-    raise NotImplementedError
+    tb_writer = SummaryWriter(log_dir=f"{args.out_dir}/logs")
     # END TODO #################
 
     # START TODO #################
     # get the transforms and pass them to the dataset
-    # train_transforms, val_transforms = ...
-    raise NotImplementedError
+    train_transforms, val_transforms = get_transforms(args)
     # END TODO #################
 
     # create dataloaders
@@ -221,7 +224,8 @@ def main():
                                                     args, device)
             # START TODO ###################
             # add_scalar train_loss and train_acc to tb_writer
-            raise NotImplementedError
+            tb_writer.add_scalar("train_loss", train_loss)
+            tb_writer.add_scalar("train_acc", train_acc)
             # END TODO ###################
 
         # iterate over the val set to compute the accuracy
@@ -230,7 +234,8 @@ def main():
               f"Loss {val_loss:.6f} accuracy {val_acc:.2%}")
         # START TODO #################
         # add_scalar val_loss and val_acc to tb_writer
-        raise NotImplementedError
+        tb_writer.add_scalar("val_loss", val_loss)
+        tb_writer.add_scalar("val_acc", val_acc)
         # END TODO ###################
         print(f"---------- End of epoch {epoch + 1}")
 
@@ -247,7 +252,8 @@ def main():
     # START TODO #################
     # add_scalar test_loss and test_acc to tb_writer
     # ideally, you'd remember the model with the best validation performance and test on that
-    raise NotImplementedError
+    tb_writer.add_scalar("test_loss", val_acc)
+    tb_writer.add_scalar("test_acc", test_acc)
     # END TODO ###################
 
 
@@ -258,7 +264,6 @@ if __name__ == '__main__':
     # train the network for 256 epochs
     # use the flag --transforms basic, and specify out_dir as 'no_augment'
     # --- do not put code here ---
-    raise NotImplementedError
     # END TODO ###################
 
     # START TODO ###################
