@@ -223,7 +223,22 @@ def update_bn_params(model, val_loader, device, num_bn_updates):
     # 2. create a copy of the model
     # 3. set the entire model to evaluation mode, except set the batchnorm modules to train mode
     # 4. run forward passes to update batchnorm statistics
-    raise NotImplementedError
+
+    loader = DataLoader(val_loader.dataset, shuffle=True)
+    model_copy = copy.deepcopy(model)
+    model.eval()
+    for module in model.modules():
+        if isinstance(module, torch.nn.BatchNorm2d):
+            module.train()
+
+    with torch.no_grad():
+        for batch_idx, (data, label) in enumerate(loader):
+            if batch_idx >= num_bn_updates:
+                break
+            data = data.to(device)
+            output = model(data)
+
+
     # END TODO ##################
     return model
 

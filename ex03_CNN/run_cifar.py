@@ -26,7 +26,9 @@ def get_transforms(args):
         # you can play around with the parameters
         train_transforms = torchvision.transforms.Compose(
             [horizontal_flip(0.5),
-            random_resize_crop(300, (0.2, 0.5))]
+            random_resize_crop(32, (1.2, 1.6)),
+            torchvision.transforms.ToTensor(),
+            torchvision.transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
         )
         # END TODO #################
     elif args.transforms == 'torchvision':
@@ -34,8 +36,10 @@ def get_transforms(args):
         # achieve the same as above with torchvision transforms
         # compare your own implementation against theirs
         train_transforms = torchvision.transforms.Compose(
-            [torchvision.transforms.RandomHorizontalFlip(),
-            torchvision.transforms.RandomResizedCrop(300)]
+            [torchvision.transforms.RandomHorizontalFlip(0.5),
+            torchvision.transforms.RandomResizedCrop(32, (1.2, 1.6)),
+            torchvision.transforms.ToTensor(),
+            torchvision.transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
         )
         # END TODO #################
     else:
@@ -269,7 +273,6 @@ if __name__ == '__main__':
     # START TODO ###################
     # train the network a second time with the flag --transforms own and the out_dir 'augment'
     # --- do not put code here ---
-    raise NotImplementedError
     # END TODO ###################
 
     # START TODO ###################
@@ -288,5 +291,4 @@ if __name__ == '__main__':
     # (3) compare the training and validation curves of 'no_augment' and 'augment'
     #   see also the test performance
     # --- do not put code here ---
-    raise NotImplementedError
     # END TODO ###################
